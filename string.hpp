@@ -1,10 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <exception>
 #include <memory>
-#include "array.cpp"
+#include "array.hpp"
 #include <stdexcept>
 
-class String : public Array<char,std::string::npos> {
+class String : protected Array<char,0> {
     public:
 
     void fill(const char item, const signed int fill_start = 0, signed int fill_end = 0) = delete;
@@ -325,7 +327,7 @@ class String : public Array<char,std::string::npos> {
 };
 
 std::ostream &operator<< (std::ostream &os, const String &str) {
-     for (int i {}; i < str.get_length(); i++) {
+     for (int i {}; i < str.length; i++) {
          os << str.ptr[i];
      }
      return os;
