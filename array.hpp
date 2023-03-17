@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <memory>
 #include <functional>
@@ -82,23 +84,24 @@ class Array {
     // }
 
    public:
-    T* get_array() const { // Returns a Raw pointer pointing to a raw array that is a exact copy to the Array class array
+    // Returns a Raw pointer pointing to a raw array that is a exact copy to the Array class array
+    T* get_array() const {
         T* copy_ptr = new T[size];
         for (int i {}; i < size; i++) {
             copy_ptr[i] = ptr[i];
         }
         return copy_ptr;
     }
-    
-    constexpr const int get_size() const noexcept { // Returns the size
+    // Returns the size
+    constexpr const int get_size() const noexcept { 
         return size;
     }
-    
-    constexpr const int get_length() const noexcept { // Returns length 
+    // Returns length or you could say returns the number of elements filled in the array
+    constexpr const int get_length() const noexcept { 
         return length;
     }
-    
-    T& operator[] (const int index) const { // Use Square brackets to access elements
+    // Use Square brackets to access elements
+    T& operator[] (const int index) const { 
         if (size <= 0) {
            throw EMPTY_ARRAY_EXCEPTION(size,length);
         }
@@ -130,7 +133,7 @@ class Array {
     //     }
     // }
 
-
+    
     template<size_t Size_1>
     bool operator== (const Array<T,Size_1> &rhs) {
         if (this->get_size() != rhs.get_size() || this->get_length() != rhs.get_length()) {
@@ -178,8 +181,8 @@ class Array {
     //          this = this + rhs;
     //     }
 
-
-    void display(const std::function<void(T,int)> func = [] (T item, int index) {std::cout << "Index: " << index << " Contents of the index: " << item << "\n";}) const { // This functions takes a function as its arguement whose parameter list contains a variable of datatype T and another variable whose job is to point to the index of the array. The function runs a for loop that will run from 0 to size of the array inside the loop it passes the item and the current index to the function in the parameter list. If no function is passed it uses a default display method. 
+    // This functions takes a function as its arguement whose parameter list contains a variable of datatype T called item and another variable whose datatype is int whose job is to point to the index of the array. The function runs a for loop that will run from 0 to size of the array. Inside the loop it passes the item and the current index to the function in the parameter list. If no function is passed it uses a default display method. 
+    void display(const std::function<void(T,int)> func = [] (T item, int index) {std::cout << "Index: " << index << " Contents of the index: " << item << "\n";}) const { 
         if (length == 0 || size == 0) {
            throw EMPTY_ARRAY_EXCEPTION(this->size, this->length);
         }
@@ -188,8 +191,8 @@ class Array {
         }
         std::cout << "\n";
     }
-
-    void push_back(T item) noexcept { // Increases the size and length of the array by one and add's a element to the back of the array.
+    // Increases the size and length of the array by one and add's a element to the back of the array.
+    void push_back(T item = T{}) noexcept { 
         ++length;
         ++size;
         std::unique_ptr<T[]> temp = std::make_unique<T[]>(size - 1);
@@ -198,8 +201,8 @@ class Array {
         std::copy(temp.get(), temp.get() + size - 1, ptr.get());
         ptr[size-1] = item;   
     }
-
-    void replace(int index, T item) { // Swap's the item at the index with the item passed in the function.
+    // Swap's the item at the index with the item passed in the function.
+    void replace(int index, T item) { 
         if (index >= size || index < 0) {
            throw OUT_OF_RANGE_EXCEPTION(size,index);
         } 
@@ -210,30 +213,30 @@ class Array {
             ptr[index] = item;
         }
     }
-
-    // virtual void replace(const std::initializer_list<T> item_list, int replace_start = 0, int replace_end = 0) { // Swap's the item at the index with the item passed in the function.
-    //     if (replace_start >= size || replace_start < 0) {
-    //        throw OUT_OF_RANGE_EXCEPTION(size,replace_start,"REPLACE START");
-    //     } 
-    //     else if (replace_end >= size || replace_end < 0) {
-    //         throw OUT_OF_RANGE_EXCEPTION(size,replace_end, "REPLACE END");
-    //     }
-    //     else if (size <= 0) {
-    //         throw EMPTY_ARRAY_EXCEPTION(size,length);
-    //     }
-    //     else if (replace_start >= replace_end) {
-    //         throw OUT_OF_RANGE_EXCEPTION(size,0,"REPLACE START GREATER THAN REPLACE END",1);
-    //     }
-    //     else {
-    //         auto item_list_iterator = item_list.begin();
-    //         for (int i {replace_start}; i < replace_end; i++) {
-    //             ptr[i] = *item_list_iterator;
-    //             item_list_iterator++;
-    //         }
-    //     }
-    // }
-
-    void insert(const int index, const T item) { // Increases the size for another element and moves everything starting for the variable "index" to the right to make space for the item and then assigns the item to the index element
+    // Accepts a list of items and replaces the elements in the calling object starting from replace star till replace end with the elements inside the list of items
+    virtual void replace(const std::initializer_list<T> item_list, int replace_start, int replace_end) { 
+        if (replace_start >= size || replace_start < 0) {
+           throw OUT_OF_RANGE_EXCEPTION(size,replace_start,"REPLACE START");
+        } 
+        else if (replace_end >= size || replace_end < 0) {
+            throw OUT_OF_RANGE_EXCEPTION(size,replace_end, "REPLACE END");
+        }
+        else if (size <= 0) {
+            throw EMPTY_ARRAY_EXCEPTION(size,length);
+        }
+        else if (replace_start >= replace_end) {
+            throw OUT_OF_RANGE_EXCEPTION(size,0,"REPLACE START GREATER THAN REPLACE END",1);
+        }
+        else {
+            auto item_list_iterator = item_list.begin();
+            for (int i {replace_start}; i < replace_end; i++) {
+                ptr[i] = *item_list_iterator;
+                item_list_iterator++;
+            }
+        }
+    }
+    // Increases the size for another element and moves everything starting for the variable "index" to the right to make space for the item and then assigns the item to the index element
+    void insert(const int index, const T item) { 
         if (index < 0 || index > size) {
             throw OUT_OF_RANGE_EXCEPTION(size,index);
             return;
@@ -250,22 +253,25 @@ class Array {
         ptr[index] = item;
         length++;
     }
-    
-    T& front() const { // Returns the element at the first index of the array
+
+    // Returns the element at the first index of the array
+    T& front() const { 
       if (size <= 0) {
          throw EMPTY_ARRAY_EXCEPTION(size,length);
       }
       return ptr[0];
     }
 
-    T& back() const { // Returns the element at the last index of the array
+    // Returns the element at the last index of the array
+    T& back() const { 
       if (size <= 0) {
          throw EMPTY_ARRAY_EXCEPTION(size,length);
       }
       return ptr[size-1];
     }
 
-    void resize(const int new_size, const T default_value = T{}) { // Manipulates the size of the array to the liking of the user
+     // Manipulates the size of the array to the liking of the user
+    void resize(const int new_size, const T default_value = T{}) {
         if (new_size == size) {
             return; // No need to change the size because its the same
         }
@@ -293,8 +299,8 @@ class Array {
         length = new_size;
         }
     }
-
-    virtual const int find(const T item) const { // Searches for the item using simple linear search and returns the index pointing to the item or returns -1 if it is not found
+    // Searches for the item using simple linear search and returns the index pointing to the item or returns -1 if it is not found
+    virtual const int find(const T item) const { 
         if (size <= 0 || length <= 0) {
            throw EMPTY_ARRAY_EXCEPTION(size,length); 
         }
@@ -305,8 +311,8 @@ class Array {
         }
         return -1;
     }
-
-    void sort(bool asc_or_desc = 0) { // if asc_or_desc is false [0] then it sorts in ascending, if its true [1] then it sorts in descending and by default its ascending
+    // if the passed argument is false (0) then it sorts in ascending, if its true (1) then it sorts in descending and by default its ascending
+    void sort(const bool &asc_or_desc = 0) { 
         T smallest;
         T largest;
         if (size <= 0 || length <= 0) {
@@ -351,7 +357,8 @@ class Array {
         }
     }
 
-    void reverse(const unsigned int reverse_start = 0, unsigned int reverse_end = -1) { // Reverses the array starting from reverse_start to reverse_end. The reason why reverse_end's default value is 0 is because you cannot access variables in the parameter which is why the value size-1 is assi
+    // Reverses the array starting from reverse_start to reverse_end. By default if no arguments are passed then it reverses the entire array. If only reverse start is given than reverse end is set to the size of the array. 
+    void reverse(const unsigned int reverse_start = 0, unsigned int reverse_end = -1) { 
         if (reverse_end == -1) {
             reverse_end = size;
         }
@@ -382,8 +389,8 @@ class Array {
            ptr[i] = temp;
         }
     }
-     
-    T& at(const int &index) const { // Another method for accessing elements if you're used to using vectors.
+    // Another method for accessing elements if you're used to using vectors.
+    T& at(const int &index) const { 
         if (size <= 0) {
             throw EMPTY_ARRAY_EXCEPTION(size,length);
         }
@@ -392,14 +399,16 @@ class Array {
         }
         return ptr[index];
     }
-
-    void clear() noexcept { // Just empties the array
+    
+    // Empties the array
+    void clear() noexcept { 
         size = 0;
         length = 0;
         ptr = std::make_unique<T[]> (0);
     }
 
-    void pop_back() noexcept { // Removes the last index 
+    // Removes the last index
+    void pop_back() noexcept {  
         --size;
         --length;
         std::unique_ptr<T[]> temp = std::make_unique<T[]>(size);
@@ -408,7 +417,8 @@ class Array {
         std::copy(temp.get(), temp.get() + size, ptr.get());        
     }
 
-    void remove (const int &index) { // Removes specified index
+    // Removes specified index
+    void remove (const int &index) { 
         if (index < 0 || index > size) {
            throw OUT_OF_RANGE_EXCEPTION(size,index);
         }
@@ -424,6 +434,7 @@ class Array {
         resize(size-1);
         length--;
     }
+    // Removes index's starting from start index (The first parameter passed) to end index (The last parameter passed)
     void remove(int start_index,int end_index) {
         if (start_index < 0 || start_index > size) {
            throw OUT_OF_RANGE_EXCEPTION(size,start_index);
@@ -454,9 +465,9 @@ class Array {
             ptr[i] = copy[i];
         }  
     }
-    
+    // Returns a new Array containing elements starting from start index to end index
     template<size_t Size_1>
-    Array<T,Size_1> slice(const int startIndex,const int endIndex) const { // Returns a new Array containing elements starting from start index to end index
+    Array<T,Size_1> slice(const int startIndex,const int endIndex) const { 
         if (size <= 0) {
             throw EMPTY_ARRAY_EXCEPTION(length, size);
         } else if (startIndex < 0 || startIndex > size - 1) {
@@ -474,7 +485,8 @@ class Array {
     return result_arr;
 }
     
-    void unique() { // This function removes all duplicates from the array.
+    // This function removes all duplicates from the array.
+    void unique() { 
         if (size <= 0) {
            throw EMPTY_ARRAY_EXCEPTION(size,length);
         }
@@ -487,7 +499,8 @@ class Array {
          }
     }
 
-    const int count (const T item) const { // Counts the number of times the item element appears in the array.
+    // Counts the number of times the item element appears in the array.
+    const int count (const T item) const { 
         if (size <= 0) {
            throw EMPTY_ARRAY_EXCEPTION(size,length); 
         }
@@ -500,14 +513,16 @@ class Array {
          return count;
     }
 
-    const bool is_empty() const noexcept { // Returns true if the the array empty. Else returns false
+    // Returns true if the the array empty. Else returns false
+    const bool is_empty() const noexcept { 
          if (size == 0) {
             return true;
          }
          return false;
     }
-
-    void swap(const unsigned int index_1, const unsigned int index_2) { // Swaps the elements at the index's mentioned by the user
+    
+    // Swaps the elements at the index's mentioned by the user
+    void swap(const unsigned int index_1, const unsigned int index_2) { 
          if (index_1 < 0 || index_1 > size) {
             throw OUT_OF_RANGE_EXCEPTION(size,index_1,"FIRST INDEX");
             return;
@@ -524,7 +539,8 @@ class Array {
          ptr[index_2] = temp;
     }
 
-    const int max() const { // Returns the greatest element in the array
+    // Returns the greatest element in the array
+    const int max() const { 
         T largest = this->at(0);
         if (size <= 0) {
             throw EMPTY_ARRAY_EXCEPTION(size,length);
@@ -537,7 +553,8 @@ class Array {
         return find(largest);
     } 
 
-    void fill(const T item, const signed int fill_start = 0, signed int fill_end = 0) { // Fills the array with the specified item starting from fill_start to fill_end
+    // Fills the array with the specified item starting from fill_start to fill_end
+    void fill(const T item, const signed int fill_start = 0, signed int fill_end = 0) { 
         if (length == size) {
             std::cerr << "Array is full\n";
             return;
@@ -563,8 +580,9 @@ class Array {
          length += fill_end - fill_start;
     }
     
+    // Takes a function as a parameter, this function will be refered to as func. Func returns a boolean and takes a variable of type T (int, double). The body of func will most likely use conditions to filter out unwanted elements and get a new filtered array all the unwanted elements gone.
     template<size_t Size_1>
-    Array<T,Size_1> filter(std::function<bool(T)> func) const { // Takes a function as a parameter, this function will be refered to as func. Func returns a boolean and takes a variable of type T (int, double). The body of func will most likely use conditions to "FILTER" out unwanted elements and get a new filtered array all the unwanted elements gone.
+    Array<T,Size_1> filter(std::function<bool(T)> func) const { 
              Array<T,Size_1> result;
              int real_size {};
              for (int i {}, j {}; i < size; i++) {
@@ -577,7 +595,8 @@ class Array {
              return result;
     }
 
-    int min() const { // returns the smallest element in the array 
+    // returns the smallest element in the array 
+    int min() const {
         T smallest = this->at(0);
         if (size == 1 && length == 1) {
          return at(0);
