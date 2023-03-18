@@ -62,6 +62,7 @@ class OUT_OF_RANGE_EXCEPTION : public std::exception {
 // Array class.
 template<class T, size_t Size = 0>
 class Array { 
+  
   protected:
 
     int size {}; // Refers to the maximum size of the current array.
@@ -482,6 +483,7 @@ class Array {
     for (int i {startIndex}, j {0}; (endIndex == result_arr.size) ? i < endIndex : i <= endIndex; i++, j++) {
         result_arr[j] = this->ptr[i]; 
     } 
+    result_arr.length = Size_1;
     return result_arr;
 }
     
@@ -612,6 +614,7 @@ class Array {
       return find(smallest);
     }
 
+    // Normal Constructor
     Array(std::initializer_list<T> init_list) 
     : size{Size} {
         ptr = std::make_unique<T[]> (size);
@@ -629,20 +632,26 @@ class Array {
              length = size;
         }
     }
+
+    // Copy constructor
     Array(const Array& source) 
     : size{source.size}, length{source.length} {
         ptr = std::make_unique<T[]>(size);
         std::copy(source.ptr.get(), source.ptr.get() + size, ptr.get());
     }
 
+    // Move constructor
     template<size_t Size_1>
     Array(Array<T, Size_1>&& rhs) noexcept
     {
         ptr = std::move(rhs.ptr);
         size = rhs.size;
+        length = rhs.length;
         rhs.size = 0;
+        rhs.length = 0;
     }
 
+    // Empty array
     Array() 
     : size{int(Size)}, length{0}{
       if (size > 0) {
