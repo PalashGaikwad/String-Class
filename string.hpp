@@ -6,7 +6,7 @@
 #include "array.hpp"
 #include <stdexcept>
 
-class String : protected Array<char,0> {
+class String : public Array<char,std::string::npos> {
     public:
 
     void fill(const char item, const signed int fill_start = 0, signed int fill_end = 0) = delete;
@@ -19,7 +19,7 @@ class String : protected Array<char,0> {
     template<typename T>
     void insert(const int index, const T item) = delete;
     
-    String operator+(const String &rhs) const {
+    String operator+(const String rhs) const {
         if (rhs.size == 0 || (rhs.size == 0 && this->size == 0)) {
             return *this;
         }
@@ -99,7 +99,6 @@ class String : protected Array<char,0> {
         for (i = 0; string[i] != '\0'; i++) {}
         length = i;
         size = length;
-        Array::length = length;
         ptr = std::make_unique<char[]> (length);
         for (int j {}; j < length; j++) {
             ptr[j] = string[j];
